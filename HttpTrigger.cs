@@ -18,15 +18,16 @@ namespace Company.Function
     public static class HttpTrigger
     {
         [FunctionName("HttpTrigger")]
-        public static IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]HttpRequest req, TraceWriter log)
+        public static IActionResult Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = null)]HttpRequest req, TraceWriter log)
         {
             log.Info("C# HTTP trigger function processed a request.");
 
-            if (req.Query.TryGetValue("productid", out StringValues value)) {
-                return new OkObjectResult($"The product name for your product id {value.First()} is Starfruit Explosion and the description is This starfruit ice cream is out of this world!");
-            }
+            string productid = req.Query["productid"];
 
-            return new BadRequestObjectResult("Please pass a productid on the query string or in the request body");
+            return productid != null
+                ? (ActionResult)new OkObjectResult($"Hello, {productid}")
+                : new BadRequestObjectResult("Please pass a name on the query string or in the request body");
+
         }
     }
 }
